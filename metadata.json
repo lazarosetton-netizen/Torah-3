@@ -1,0 +1,6 @@
+{
+  "name": "Daf Rabbi - Gemara & Torah Study",
+  "description": "An Orthodox Rabbi AI for studying Gemara and Torah. Upload images or PDFs of Jewish books for detailed analysis, translation, and interactive study.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}
