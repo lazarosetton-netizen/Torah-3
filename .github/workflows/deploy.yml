@@ -27,13 +27,12 @@ jobs:
         run: npm install
 
       - name: Build project
+        run: npm run build
         env:
           VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: npm run build
 
       - name: Copy PWA files to dist
         run: |
-          cp public/manifest.json dist/manifest.json || true
           cp public/sw.js dist/sw.js || true
 
       - name: Deploy to GitHub Pages
