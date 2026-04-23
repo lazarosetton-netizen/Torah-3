@@ -1,8 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisResult, ChatMessage, FileData, Language } from "../types";
 
-
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+
 const SYSTEM_INSTRUCTION = `You are a highly learned Orthodox Rabbi and scholar of Torah and Gemara. 
 Your knowledge is deeply rooted in traditional Jewish sources and portals such as:
 - https://daf-yomi.com/
@@ -36,7 +36,7 @@ If the content is any other type of Jewish book (Halacha, Musar, Midrash, Parabl
 - Portuguese, English, Spanish, French, Russian.`;
 
 export async function analyzeText(file: FileData, language: Language): Promise<AnalysisResult> {
-  const model = "gemini-3.1-pro-preview";
+  const model = "gemini-2.0-flash";
   
   const prompt = `Please provide a complete analysis of this Jewish text in ${language}.
   
@@ -85,7 +85,7 @@ export async function chatWithRabbi(
   contextText?: string,
   contextFile?: FileData
 ): Promise<string> {
-  const model = "gemini-3.1-pro-preview";
+  const model = "gemini-2.0-flash";
   
   const contents = history.map(msg => ({
     role: msg.role === 'user' ? 'user' : 'model',
@@ -107,8 +107,6 @@ export async function chatWithRabbi(
     });
   }
 
-  // Add current user message to contents for sendContent style or use chat API
-  // Using direct generateContent for simplicity with file context injection
   const response = await ai.models.generateContent({
     model,
     contents: [
