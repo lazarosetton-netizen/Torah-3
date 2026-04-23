@@ -1,0 +1,24 @@
+{
+  "name": "Daf Rabbi",
+  "short_name": "Daf Rabbi",
+  "description": "Estude Gemara e Torá com uma IA de Rabino Ortodoxo",
+  "start_url": "/Torah-3/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/Torah-3/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Torah-3/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
