@@ -1,7 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisResult, ChatMessage, FileData, Language } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyB92XEGQDg3tXkJ9HstsmdLqTU1Obv0kdM" });
+const ai = new GoogleGenAI({ apiKey: "SUA_CHAVE_AQUI" });
+
 const SYSTEM_INSTRUCTION = `You are a highly learned Orthodox Rabbi and scholar of Torah and Gemara. 
 Your knowledge is deeply rooted in traditional Jewish sources and portals such as:
 - https://daf-yomi.com/
@@ -35,8 +36,8 @@ If the content is any other type of Jewish book (Halacha, Musar, Midrash, Parabl
 - Portuguese, English, Spanish, French, Russian.`;
 
 export async function analyzeText(file: FileData, language: Language): Promise<AnalysisResult> {
-  const model = "gemini-2.0-flash";
-  
+  const model = "gemini-1.5-flash";
+
   const prompt = `Please provide a complete analysis of this Jewish text in ${language}.
   
   IF THIS IS GEMARA: 
@@ -84,7 +85,7 @@ export async function chatWithRabbi(
   contextText?: string,
   contextFile?: FileData
 ): Promise<string> {
-  const model = "gemini-2.0-flash";
+  const model = "gemini-1.5-flash";
   
   const contents = history.map(msg => ({
     role: msg.role === 'user' ? 'user' : 'model',
