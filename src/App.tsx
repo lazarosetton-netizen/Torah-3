@@ -88,7 +88,7 @@ export default function App() {
       });
     } catch (error) {
       console.error(error);
-      alert(UI_LABELS[language].error);
+      alert(error?.message || error?.toString() || UI_LABELS[language].error);
     } finally {
       setIsAnalyzing(false);
     }
