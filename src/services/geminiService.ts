@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisResult, ChatMessage, FileData, Language } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyDr6ZBsxcevXpKG1B7AmVQAIMOz-55_TCI" });
+const ai = new GoogleGenAI({ apiKey: "SUA_CHAVE_AQUI" });
 
 const SYSTEM_INSTRUCTION = `You are a highly learned Orthodox Rabbi and scholar of Torah and Gemara. 
 Your knowledge is deeply rooted in traditional Jewish sources and portals such as:
@@ -50,25 +50,28 @@ export async function analyzeText(file: FileData, language: Language): Promise<A
   
   Conclude by asking if the student has any further questions about these holy words.`;
 
-  const parts = [
-    { text: prompt },
-    {
-      inlineData: {
-        mimeType: file.mimeType,
-        data: file.base64,
-      },
-    },
-  ];
-
   const response = await ai.models.generateContent({
     model,
-    contents: { parts },
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            inlineData: {
+              mimeType: file.mimeType,
+              data: file.base64,
+            },
+          },
+          { text: prompt },
+        ],
+      },
+    ],
     config: {
       systemInstruction: SYSTEM_INSTRUCTION,
     },
   });
 
-  const text = response.text || "I am sorry, but I could not analyze this document. Please search for a clearer image.";
+  const text = response.text || "I am sorry, but I could not analyze this document.";
   const isGemara = text.toLowerCase().includes("gemara") || text.toLowerCase().includes("talmud");
 
   return {
@@ -79,21 +82,21 @@ export async function analyzeText(file: FileData, language: Language): Promise<A
 }
 
 export async function chatWithRabbi(
-  history: ChatMessage[], 
-  userMessage: string, 
+  history: ChatMessage[],
+  userMessage: string,
   language: Language,
   contextText?: string,
   contextFile?: FileData
 ): Promise<string> {
   const model = "gemini-1.5-flash";
-  
+
   const contents = history.map(msg => ({
-    role: msg.role === 'user' ? 'user' : 'model',
-    parts: [{ text: msg.content }]
+    role: msg.role === "user" ? "user" : "model",
+    parts: [{ text: msg.content }],
   }));
 
   const currentParts: any[] = [{ text: `User asks in ${language}: ${userMessage}` }];
-  
+
   if (contextText) {
     currentParts.push({ text: `Context of current study: ${contextText}` });
   }
@@ -103,7 +106,7 @@ export async function chatWithRabbi(
       inlineData: {
         mimeType: contextFile.mimeType,
         data: contextFile.base64,
-      }
+      },
     });
   }
 
@@ -111,7 +114,7 @@ export async function chatWithRabbi(
     model,
     contents: [
       ...contents,
-      { role: 'user', parts: currentParts }
+      { role: "user", parts: currentParts },
     ],
     config: {
       systemInstruction: SYSTEM_INSTRUCTION,
