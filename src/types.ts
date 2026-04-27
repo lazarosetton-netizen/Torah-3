@@ -16,3 +16,16 @@ export interface FileData {
   mimeType: string;
   name: string;
 }
+
+export interface SavedStudy {
+  id?: string;
+  userId: string;
+  fileName: string;
+  mimeType: string;
+  fileBase64?: string;
+  analysisText: string;
+  isGemara: boolean;
+  language: Language;
+  createdAt: any; // Timestamp
+  chatHistory: ChatMessage[];
+}

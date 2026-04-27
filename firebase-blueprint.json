@@ -1,0 +1,51 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Public profile for the student",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" }
+      },
+      "required": ["email"]
+    },
+    "StudySession": {
+      "title": "Study Session",
+      "description": "A saved study session including analysis and chat history",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The UID of the owner" },
+        "fileName": { "type": "string" },
+        "mimeType": { "type": "string" },
+        "fileBase64": { "type": "string" },
+        "analysisText": { "type": "string" },
+        "isGemara": { "type": "boolean" },
+        "language": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "chatHistory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": { "type": "string", "enum": ["user", "assistant"] },
+              "content": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["userId", "analysisText", "language", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/studies/{studyId}": {
+      "schema": "StudySession",
+      "description": "Saved study sessions"
+    }
+  }
+}

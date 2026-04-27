@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { 
+      return request.auth != null; 
+    }
+    
+    function isOwner(userId) { 
+      return isSignedIn() && request.auth.uid == userId; 
+    }
+    
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    
+    function incoming() { 
+      return request.resource.data; 
+    }
+    
+    function existing() { 
+      return resource.data; 
+    }
+    
+    function isVerified() { 
+      return request.auth.token.email_verified == true; 
+    }
+
+    // --- Entity Validations ---
+    
+    function isValidUser(data) {
+      return data.keys().hasAll(['email']) && 
+             data.keys().size() <= 5 &&
+             data.email is string && data.email.size() <= 256 &&
+             (!data.keys().contains('displayName') || (data.displayName is string && data.displayName.size() <= 100)) &&
+             (!data.keys().contains('photoURL') || (data.photoURL is string && data.photoURL.size() <= 1024));
+    }
+
+    function isValidStudy(data) {
+      // We limit fields to keep doc size under 1MB
+      return data.keys().hasAll(['userId', 'analysisText', 'language', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.analysisText is string && data.analysisText.size() <= 500000 && // 500KB limit
+             data.language is string && data.language.size() <= 10 &&
+             data.createdAt == request.time &&
+             (!data.keys().contains('fileName') || (data.fileName is string && data.fileName.size() <= 256)) &&
+             (!data.keys().contains('mimeType') || (data.mimeType is string && data.mimeType.size() <= 100)) &&
+             // fileBase64 is risky in Firestore, we limit heavily
+             (!data.keys().contains('fileBase64') || (data.fileBase64 is string && data.fileBase64.size() <= 400000)) && 
+             (!data.keys().contains('chatHistory') || (data.chatHistory is list && data.chatHistory.size() <= 100));
+    }
+
+    // --- Collections ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming()) && isVerified();
+      allow update: if isOwner(userId) && isValidUser(incoming()) && 
+                    incoming().email == existing().email &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'lastActiveAt']);
+    }
+
+    match /studies/{studyId} {
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidStudy(incoming()) && isVerified();
+      allow update: if isSignedIn() && existing().userId == request.auth.uid &&
+                    isValidStudy(incoming()) &&
+                    incoming().userId == existing().userId &&
+                    incoming().createdAt == existing().createdAt &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['chatHistory', 'fileName', 'analysisText']);
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+  }
+}
