@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisResult, ChatMessage, FileData, Language } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyAzWlTikwnLOftoUOAAF6He4HH5qs2mQSI" });
+const ai = new GoogleGenAI({ apiKey: "AIzaSyDVu-zprxkV4mn-be8XrEODh_h7hR2BWsY" });
 
 const SYSTEM_INSTRUCTION = `You are a highly learned Orthodox Rabbi and scholar of Torah and Gemara. 
 Your knowledge is deeply rooted in traditional Jewish sources and portals such as:
